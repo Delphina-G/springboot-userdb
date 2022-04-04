@@ -3,6 +3,8 @@ package com.example.pmdemo;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,8 +21,15 @@ public class UserController {
 	
 	
 	@PostMapping("/insertUser")
-	public void insertUser(@RequestBody UserPOJO user) {
-		userRepo.save(user);
+	public ResponseEntity<UserPOJO> insertUser(@RequestBody UserPOJO user) {
+		if(user==null) {
+			return new ResponseEntity<UserPOJO>(HttpStatus.BAD_REQUEST);
+		}
+		else {
+			userRepo.save(user);
+			return new ResponseEntity<UserPOJO>(HttpStatus.OK);
+		}
+		
 	}
 	
 	@PostMapping("/insertUsers")
@@ -31,8 +40,18 @@ public class UserController {
 	}
 	
 	@GetMapping("/displayUsers")
-	public List<UserPOJO> displayUser(){
-		return (List<UserPOJO>) userRepo.findAll();
+	public ResponseEntity<List<UserPOJO>> displayUser(){
+		List<UserPOJO> allUsers=(List<UserPOJO>) userRepo.findAll();
+		
+		if(allUsers.isEmpty()) {
+			return new ResponseEntity<List<UserPOJO>>(HttpStatus.BAD_REQUEST);
+		}
+		else {
+			return new ResponseEntity<List<UserPOJO>>(allUsers,HttpStatus.OK);
+		}
+		
+		
+		
 	}
 	
 	@GetMapping("/fetchUser/{id}")
